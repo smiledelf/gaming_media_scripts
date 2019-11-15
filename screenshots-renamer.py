@@ -30,7 +30,7 @@ def main():
             duplicate_exist = os.path.isfile(proposed_filename)
 
             while duplicate_exist:
-                print(proposed_filename, duplicate_exist)
+
                 duplicate_index += 1
                 proposed_filename = creation_day + creation_month + creation_year + '_' + str(duplicate_index) + '.png'
 
