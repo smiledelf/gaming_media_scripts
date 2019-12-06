@@ -43,7 +43,7 @@ def main():
             duplicate_index = 1
 
             # Propose name with no duplicates
-            # e.g 2019_06_26_1
+            # e.g 2019_06_26_1   YOOOO Change to 2019_06_26 (1) ?
             proposed_filename = creation_year + '_' + creation_month + '_' + creation_day + '_' + \
                 str(duplicate_index) + '.png'
 
