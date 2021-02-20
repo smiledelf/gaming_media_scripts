@@ -13,7 +13,7 @@ def main():
           "\nThis script will rename image files in the current folder!"
           "\nThere is no undo function available."
           "\n-----------------------!! WARNING !!---------------------------"
-          "\nAre you sure you want to proceed? Type y/n below:")
+          "\nAre you sure you want to proceed? Type y/n: ")
 
     usr = str(input()).lower()
     if usr == 'y' or usr == 'yes':
@@ -69,21 +69,8 @@ def rename_windows():
           "\n----------------------------------")
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = [".jpg", ".png"]
-    month_dict = {
-        "Jan": "01",
-        "Feb": "02",
-        "Mar": "03",
-        "Apr": "04",
-        "May": "05",
-        "Jun": "06",
-        "Jul": "07",
-        "Aug": "08",
-        "Sep": "09",
-        "Oct": "10",
-        "Nov": "11",
-        "Dec": "12",
-    }
+    accepted_extensions = CommonVar.acc_ext()
+    month_dict = CommonVar.month_dict()
 
     # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
     already_correct = find_existing_windows()
@@ -124,7 +111,6 @@ def rename_windows():
                 input("Pausing the program...")
 
 
-
 def find_existing_windows():
     """
     Modified version of the rename_windows function, used to find which pictures in the folder
@@ -139,21 +125,8 @@ def find_existing_windows():
     already_correct = set()
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = [".jpg", ".png"]
-    month_dict = {
-        "Jan": "01",
-        "Feb": "02",
-        "Mar": "03",
-        "Apr": "04",
-        "May": "05",
-        "Jun": "06",
-        "Jul": "07",
-        "Aug": "08",
-        "Sep": "09",
-        "Oct": "10",
-        "Nov": "11",
-        "Dec": "12",
-    }
+    accepted_extensions = CommonVar.acc_ext()
+    month_dict = CommonVar.month_dict()
 
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
@@ -208,21 +181,8 @@ def rename_steam():
         app_id = str(input("AppID must be an integer! Please enter the AppID: "))
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = [".jpg", ".png"]
-    month_dict = {
-        "Jan": "01",
-        "Feb": "02",
-        "Mar": "03",
-        "Apr": "04",
-        "May": "05",
-        "Jun": "06",
-        "Jul": "07",
-        "Aug": "08",
-        "Sep": "09",
-        "Oct": "10",
-        "Nov": "11",
-        "Dec": "12",
-    }
+    accepted_extensions = CommonVar.acc_ext()
+    month_dict = CommonVar.month_dict()
 
     # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
     already_correct = find_existing_steam(app_id)
@@ -280,21 +240,8 @@ def find_existing_steam(app_id):
     already_correct = set()
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = [".jpg", ".png"]
-    month_dict = {
-        "Jan": "01",
-        "Feb": "02",
-        "Mar": "03",
-        "Apr": "04",
-        "May": "05",
-        "Jun": "06",
-        "Jul": "07",
-        "Aug": "08",
-        "Sep": "09",
-        "Oct": "10",
-        "Nov": "11",
-        "Dec": "12",
-    }
+    accepted_extensions = CommonVar.acc_ext()
+    month_dict = CommonVar.month_dict()
 
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
@@ -331,6 +278,39 @@ def find_existing_steam(app_id):
             # REMOVED RENAMING TRY/EXCEPT
 
     return already_correct  # RETURN SET
+
+
+class CommonVar:
+    """
+    Class that returns frequently-used variables, such as a list of accepted extensions
+    """
+    @staticmethod
+    # accepted extensions
+    def acc_ext():
+        return [".jpg", ".png", ".bmp"]
+
+    @staticmethod
+    def month_dict():
+        return {
+            "Jan": "01",
+            "Feb": "02",
+            "Mar": "03",
+            "Apr": "04",
+            "May": "05",
+            "Jun": "06",
+            "Jul": "07",
+            "Aug": "08",
+            "Sep": "09",
+            "Oct": "10",
+            "Nov": "11",
+            "Dec": "12",
+        }
+
+
+class ExitMethods:
+    @staticmethod
+    def something():
+        return ""
 
 
 if __name__ == "__main__":
