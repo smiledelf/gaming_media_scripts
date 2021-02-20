@@ -27,10 +27,11 @@ def main():
               "\n   e.g 1172470_20200129203829_8")
         scheme = input("Please enter the number: ").strip()
         if scheme == "1":
-            # screenshot_windows()
-            screenshot_windows_smart()
+            screenshot_windows()
+            input("Finished! Press ENTER to exit...")
         elif scheme == "2":
             screenshot_steam()
+            input("Finished! Press ENTER to exit...")
         else:
             print("Invalid response!")
             pause = input("Press ENTER to exit...")
@@ -47,7 +48,7 @@ def main():
 
 def screenshot_windows():
     """
-    This naming scheme loops through the current folder and looks for .png files, then
+    This naming scheme loops through the current folder and looks for image files, then
     renames them according to most recent date of modification without duplicates.
 
     Format is YYYY-MM-DD (N)
@@ -56,13 +57,12 @@ def screenshot_windows():
     Note2: Only recognises jpg and png (most common extensions) at the moment
     """
 
-    print("------------------------------"
-          "\nWindows naming scheme selected"
-          "\n------------------------------")
-    pause = input("BEFORE WE BEGIN: Please remove all screenshots which already have the correct naming scheme!"
-                  "\n Press ENTER to continue...")
+    print("----------------------------------"
+          "\nRenaming using the Windows scheme!"
+          "\n----------------------------------")
 
-    # Set up dictionary for month conversion (e.g Jun -> 06)
+    # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
+    accepted_extensions = [".jpg", ".png"]
     month_dict = {
         "Jan": "01",
         "Feb": "02",
@@ -78,16 +78,16 @@ def screenshot_windows():
         "Dec": "12",
     }
 
-    # Common image file extensions
-    accepted_extensions = [".jpg", ".png"]
+    # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
+    already_correct = screenshot_windows_existing()
 
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
 
     for file in os.listdir(current_directory):
         file_extension = file[-4:]
-        if file_extension in accepted_extensions:
-            # If file is a picture, extract date of most recent content modification
+        if (file not in already_correct) and (file_extension in accepted_extensions):
+            # Extract date of most recent content modification
             filepath = os.path.join(os.curdir, file)
             filestatobject = os.stat(filepath)
 
@@ -115,24 +115,21 @@ def screenshot_windows():
                 print("ERROR: Cannot rename", filepath, "to", proposed_filename + "! File already exists.")
 
 
-def screenshot_windows_smart():
+def screenshot_windows_existing():
     """
-    This naming scheme loops through the current folder and looks for .png files, then
-    renames them according to most recent date of modification without duplicates.
+    Modified version of the screenshot_windows function, used to find which pictures in the folder
+    already has correct naming.
 
-    Format is YYYY-MM-DD (N)
+    Differences will be highlighted by comments in CAPITAL LETTERS.
 
-    Note: Time of most recent content modification is more reliable than day of creation
-    Note2: Only recognises jpg and png (most common extensions) at the moment
+    Output: a Python set containing filenames with already-correct naming scheme
     """
 
-    print("------------------------------"
-          "\nWindows naming scheme selected"
-          "\n------------------------------")
-    pause = input("BEFORE WE BEGIN: Please remove all screenshots which already have the correct naming scheme!"
-                  "\n Press ENTER to continue...")
+    # Known filenames will go here
+    already_correct = set()
 
-    # Set up dictionary for month conversion (e.g Jun -> 06)
+    # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
+    accepted_extensions = [".jpg", ".png"]
     month_dict = {
         "Jan": "01",
         "Feb": "02",
@@ -148,12 +145,8 @@ def screenshot_windows_smart():
         "Dec": "12",
     }
 
-    # Common image file extensions
-    accepted_extensions = [".jpg", ".png"]
-
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
-
     for file in os.listdir(current_directory):
         file_extension = file[-4:]
         if file_extension in accepted_extensions:
@@ -174,19 +167,82 @@ def screenshot_windows_smart():
             proposed_filename = modified_year + '-' + modified_month + '-' + modified_day + file_extension
             duplicate_exist = os.path.isfile(proposed_filename)  # T if dupe exists, F otherwise
             while duplicate_exist:
+                already_correct.add(proposed_filename)  # ADD TO SET OF KNOWN CORRECT FILENAMES
                 duplicate_index += 1
                 proposed_filename = modified_year + '-' + modified_month + '-' + modified_day + ' (' + str(duplicate_index) + ")" + file_extension
                 duplicate_exist = os.path.isfile(proposed_filename)
 
-            # Rename the file to proposed filename
-            try:
-                os.rename(filepath, proposed_filename)
-            except FileExistsError:
-                print("ERROR: Cannot rename", filepath, "to", proposed_filename + "! File already exists.")
+    return already_correct
 
 
 def screenshot_steam():
-    print("SCREENSHOT STEAM")
+    """
+        This naming scheme loops through the current folder and looks for image files, then
+        renames them according to most recent date of modification without duplicates.
+
+        Format is AppID_YYYYMMDDHHMMSS_N.extension
+
+        Note: Time of most recent content modification is more reliable than day of creation
+        Note2: Only recognises jpg and png (most common extensions) at the moment
+        """
+
+    print("----------------------------------"
+          "\nRenaming using the Steam scheme!"
+          "\n----------------------------------")
+
+    # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
+    accepted_extensions = [".jpg", ".png"]
+    month_dict = {
+        "Jan": "01",
+        "Feb": "02",
+        "Mar": "03",
+        "Apr": "04",
+        "May": "05",
+        "Jun": "06",
+        "Jul": "07",
+        "Aug": "08",
+        "Sep": "09",
+        "Oct": "10",
+        "Nov": "11",
+        "Dec": "12",
+    }
+
+    # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
+    already_correct = screenshot_windows_existing()
+
+    # Get current directory, then loop through its files to find which ones are screenshots
+    current_directory = os.curdir
+
+    for file in os.listdir(current_directory):
+        file_extension = file[-4:]
+        if (file not in already_correct) and (file_extension in accepted_extensions):
+            # Extract date of most recent content modification
+            filepath = os.path.join(os.curdir, file)
+            filestatobject = os.stat(filepath)
+
+            # Extract most recent modification date and split into variables
+            # Note: ctime() returns a string from the datetime object
+            modified_time = time.ctime(filestatobject[stat.ST_MTIME]).split()  # e.g [Mon, Jul, 8, 01:16:44, 2019]
+            modified_day = "{:02d}".format(int(modified_time[2]))
+            modified_month = month_dict.get(str(modified_time[1]))
+            modified_year = str(modified_time[-1])
+            duplicate_index = 0
+
+            # Propose a possible filename and add duplicate index if appropriate
+            # e.g 2019-06-26 (1)
+            proposed_filename = modified_year + '-' + modified_month + '-' + modified_day + file_extension
+            duplicate_exist = os.path.isfile(proposed_filename)  # T if dupe exists, F otherwise
+            while duplicate_exist:
+                duplicate_index += 1
+                proposed_filename = modified_year + '-' + modified_month + '-' + modified_day + ' (' + str(
+                    duplicate_index) + ")" + file_extension
+                duplicate_exist = os.path.isfile(proposed_filename)
+
+            # Rename the file to proposed filename
+            try:
+                os.rename(filepath, proposed_filename)
+            except FileExistsError:
+                print("ERROR: Cannot rename", filepath, "to", proposed_filename + "! File already exists.")
 
 
 if __name__ == "__main__":
