@@ -8,7 +8,7 @@ def main():
     Main function to allow the user to pick which naming scheme they want
     """
 
-    # Give user some warning
+    # Warnings
     print("-----------------------!! WARNING !!---------------------------"
           "\nThis script will rename image files in the current folder!"
           "\nThere is no undo function available."
@@ -17,7 +17,7 @@ def main():
 
     usr = str(input()).lower()
     if usr == 'y' or usr == 'yes':
-        # User entered YES - pick screenshot renaming scheme
+        # Pick screenshot renaming scheme
         print("-----------------------"
               "\nSelect naming scheme..."
               "\n-----------------------"
@@ -27,30 +27,18 @@ def main():
               "\n   e.g 1172470_20200129203829_8")
         scheme = input("Please enter the number of the naming scheme to be used: ").strip()
         if scheme == "1":
-            confirm_windows = str(input("\nYou have picked the Windows naming scheme. \nIs this correct? Y/N: ")).lower
-            if confirm_windows == 'y':
-                rename_windows()
-                input("Finished! Press ENTER to exit...")
-                exit()
-            else:
-                input("\nAcknowledged. Press ENTER to exit...")
-                exit()
+            rename_windows()
+            ExitMethods.finished()
         elif scheme == "2":
             rename_steam()
-            input("Finished! Press ENTER to exit...")
-            exit()
+            ExitMethods.finished()
         else:
-            print("Invalid response!")
-            pause = input("Press ENTER to exit...")
-            exit()
+            ExitMethods.invalid()
 
     elif usr == 'n' or usr == 'no':
-        pause = input("Press ENTER to exit...")
-        exit()
+        ExitMethods.normal_exit()
     else:
-        print("Invalid response!")
-        pause = input("Press ENTER to exit...")
-        exit()
+        ExitMethods.invalid()
 
 
 def rename_windows():
@@ -81,6 +69,7 @@ def rename_windows():
     for file in os.listdir(current_directory):
         file_extension = file[-4:]
         if (file not in already_correct) and (file_extension in accepted_extensions):
+
             # Extract date of most recent content modification
             filepath = os.path.join(os.curdir, file)
             filestatobject = os.stat(filepath)
@@ -309,8 +298,20 @@ class CommonVar:
 
 class ExitMethods:
     @staticmethod
-    def something():
-        return ""
+    def finished():
+        input("Finished! Press ENTER to exit...")
+        exit()
+
+    @staticmethod
+    def normal_exit():
+        input("Press ENTER to exit...")
+        exit()
+
+    @staticmethod
+    def invalid():
+        input("Invalid response!"
+              "\nPress ENTER to exit...")
+        exit()
 
 
 if __name__ == "__main__":
