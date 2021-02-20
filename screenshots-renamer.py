@@ -31,8 +31,9 @@ def main():
             if confirm_windows == 'y':
                 rename_windows()
                 input("Finished! Press ENTER to exit...")
+                exit()
             else:
-                print("\nAcknowledged. Press ENTER to exit...")
+                input("\nAcknowledged. Press ENTER to exit...")
                 exit()
         elif scheme == "2":
             rename_steam()
@@ -120,6 +121,8 @@ def rename_windows():
                 os.rename(filepath, proposed_filename)
             except FileExistsError:
                 print("ERROR: Cannot rename", filepath, "to", proposed_filename + "! File already exists.")
+                input("Pausing the program...")
+
 
 
 def find_existing_windows():
