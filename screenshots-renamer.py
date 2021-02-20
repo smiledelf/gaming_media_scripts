@@ -5,10 +5,48 @@ import time
 
 def main():
     """
-    This program loops through the folder it's placed in and looks for .png files that start with "Screenshot", then
-    renames them according to day of creation without duplicates.
+    Main function to allow the user to pick which naming scheme they want
     """
-    user_proceed()
+
+    # Give user some warning
+    print("-----------------------!! WARNING !!---------------------------"
+          "\nThis script will rename any files that start with 'Screenshot'!"
+          "\nThere is no undo function available."
+          "\n-----------------------!! WARNING !!---------------------------"
+          "\nAre you sure you want to proceed? Type y/n below:")
+
+    usr = str(input()).lower()
+    if usr == 'y' or usr == 'yes':
+        # User entered YES - pick screenshot renaming scheme
+        print("--------------------"
+              "\nSelect naming scheme..."
+              "\n--------------------"
+              "\n1: Windows (e.g 2020-01-29 (8))"
+              "\n2: Steam (e.g 1172470_20200129203829_8)")
+        scheme = input("Please enter the number: ").strip()
+        if scheme == "1":
+            screenshot_windows()
+        elif scheme == "2":
+            screenshot_steam()
+        else:
+            print("Invalid response!")
+            pause = input("Press ENTER to exit...")
+            exit()
+
+    elif usr == 'n' or usr == 'no':
+        pause = input("Press ENTER to exit...")
+        exit()
+    else:
+        print("Invalid response!")
+        pause = input("Press ENTER to exit...")
+        exit()
+
+
+def screenshot_windows():
+    """
+    This naming scheme loops through the current folder and looks for .png files
+    that start with "Screenshot", then renames them according to day of creation without duplicates.
+    """
 
     # Set up dictionary for month conversion (e.g Jun -> 06)
     month_dict = {
@@ -62,27 +100,8 @@ def main():
                 print("ERROR: Cannot rename", filepath, "to", proposed_filename + "! File already exists.")
 
 
-def user_proceed():
-    """
-    Simple prompt asking user if they want to continue with script.
-    """
-    print("-----------------------!! WARNING !!---------------------------")
-    print("This script will rename any files that start with 'Screenshot'!")
-    print("There is no undo function available.")
-    print("-----------------------!! WARNING !!---------------------------")
-    print("Are you sure you want to proceed? Type y/n below:")
-
-    usr = str(input()).lower()
-
-    if usr == 'y' or usr == 'yes':
-        print("--------------------\nBeginning script...\n--------------------")
-    elif usr == 'n' or usr == 'no' or usr == 'nah':
-        pause = input("Press ENTER to exit...")
-        exit()
-    else:
-        print("Please enter a valid response next time! ")
-        pause = input("Press ENTER to exit...")
-        exit()
+def screenshot_steam():
+    pass
 
 
 if __name__ == "__main__":
