@@ -118,17 +118,31 @@ def apply_windows_naming(directory_path:str, dry_run:bool=True):
 
     # tbh this function should just be 'loop over files, if it matches the dict, then rename it'
     # this function currently handles most of the logic already
-
+    
     files_to_rename = get_files_to_rename(directory_path) # TODO: different naming schemes?
-    for filepath, proposed_filepath in files_to_rename.items():
 
+    csv_lines = ['old file name, new (proposed) file name, status\n']
+    for filepath, proposed_filepath in files_to_rename.items():
+        status = ""
         if dry_run:
             print(f"(Dry run) | {os.path.basename(filepath):20} ------> {os.path.basename(proposed_filepath):20}")
+            status = "N/A (dry run)"
         else:
             try:
                 os.rename(filepath, proposed_filepath)
+                status = "success"
             except FileExistsError:
                 print("ERROR: Cannot rename", filepath, "to", proposed_filepath + "! File already exists.")
+                status = "failed"
+                
+        csv_lines.append(f"{filepath}, {proposed_filepath}, {status}\n")
+
+    # save logs to a file
+    csv_filename = 'screenshots-renamer-status.csv'
+    csv_filepath = os.path.join(directory_path, csv_filename)
+    with open(csv_filepath, 'w') as csv:
+        csv.writelines(csv_lines)
+        print(f"Saved log to {csv_filepath}")
 
 
 def rename_windows():
