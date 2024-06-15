@@ -1,6 +1,7 @@
 import os
 import stat
 import time
+import datetime
 
 
 def main():
@@ -8,37 +9,131 @@ def main():
     Main function to allow the user to pick which naming scheme they want
     """
 
-    # Warnings
-    print("-----------------------!! WARNING !!---------------------------"
-          "\nThis script will rename image files in the current folder!"
-          "\nThere is no undo function available."
-          "\n-----------------------!! WARNING !!---------------------------"
-          "\nAre you sure you want to proceed? Type y/n: ")
+    # # Warnings
+    # print("-----------------------!! WARNING !!---------------------------"
+    #       "\nThis script will rename image files in the current folder!"
+    #       "\nThere is no undo function available."
+    #       "\n-----------------------!! WARNING !!---------------------------"
+    #       "\nAre you sure you want to proceed? Type y/n: ")
 
-    usr = str(input()).lower()
-    if usr == 'y' or usr == 'yes':
-        # Pick screenshot renaming scheme
-        print("-----------------------"
-              "\nSelect naming scheme..."
-              "\n-----------------------"
-              "\n1: Windows "
-              "\n   e.g 2020-01-29 (8)"
-              "\n2: Steam "
-              "\n   e.g 1172470_20200129203829_8")
-        scheme = input("Please enter the number of the naming scheme to be used: ").strip()
-        if scheme == "1":
-            rename_windows()
-            ExitMethods.finished()
-        elif scheme == "2":
-            rename_steam()
-            ExitMethods.finished()
-        else:
-            ExitMethods.invalid()
+    # usr = str(input()).lower()
+    # if usr == 'y' or usr == 'yes':
+    #     # Pick screenshot renaming scheme
+    #     print("-----------------------"
+    #           "\nSelect naming scheme..."
+    #           "\n-----------------------"
+    #           "\n1: Windows "
+    #           "\n   e.g 2020-01-29 (8)"
+    #           "\n2: Steam "
+    #           "\n   e.g 1172470_20200129203829_8")
+    #     scheme = input("Please enter the number of the naming scheme to be used: ").strip()
+    #     if scheme == "1":
+    #         rename_windows()
+    #         ExitMethods.finished()
+    #     elif scheme == "2":
+    #         rename_steam()
+    #         ExitMethods.finished()
+    #     else:
+    #         ExitMethods.invalid()
 
-    elif usr == 'n' or usr == 'no':
-        ExitMethods.normal_exit()
+    # elif usr == 'n' or usr == 'no':
+    #     ExitMethods.normal_exit()
+    # else:
+    #     ExitMethods.invalid()
+
+    debug = True
+    if debug:
+        test_folder = "test_screenshots" # <--- change here
+        script_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), test_folder)
     else:
-        ExitMethods.invalid()
+        # set cwd to location of the script
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+    
+    os.chdir(script_directory) 
+
+    apply_windows_naming(script_directory, True)
+
+
+def apply_windows_naming(directory_path:str, dry_run:bool=True):
+    """
+    The goal: pass in a folder path, and rename based on naming scheme - output renamed files as log.
+
+    Important edge cases:
+    - Sometimes not all files need to be renamed (e.g if we already ran the script once before)
+
+    Standards:
+    - File paths - should all be in absolute full paths, especially if returning
+
+    """
+
+    # tbh this function should just be 'loop over files, if it matches the dict, then rename it'
+    # this function currently handles most of the logic already
+
+
+    month_dict = StandardVariables.months
+
+    # for each file in current folder, if applicable, propose a new filename (based on scheme) --> create a mapping dict. out of this?
+    files_to_rename = [] # to fill with mapping tuples i.e, (old_filepath, new_filepath)
+    files_to_skip = [] # this is for pictures that already have the name correct naming scheme TODO: this is implicit in the new logic, no?
+
+    for file in os.listdir(directory_path):
+
+        rename_mapping = () # to return: (path to old file, path to new file)
+
+        # get file extension
+        try:
+            file_extension = os.path.splitext(file)[1] # e.g .png - note the '.' is included
+        except IndexError as error:
+            msg = f"Index error when getting file extension for file: {file}. If file has no extension, ignore this message."
+            print(msg)
+
+        if file_extension in StandardVariables.accepted_extensions:
+            # extract the most recent modification date for the file, then format as string according to formatting rules
+            filepath = os.path.join(directory_path, file)
+            modified_timestamp = os.stat(filepath)[stat.ST_MTIME]
+            modified_datetime = datetime.datetime.fromtimestamp(modified_timestamp)
+
+            modified_datetime_formatted = modified_datetime.strftime(StandardVariables.windows_datetime_formatting)  # e.g '2020-01-29'
+                    
+            # TODO: branch off here depending on naming scheme - for now, Windows :)
+            # propose new filename and add duplicate suffix if appropriate
+            
+            proposed_filename = f"{modified_datetime_formatted}{file_extension}"
+            proposed_filepath = os.path.join(directory_path, proposed_filename)
+
+            # handle duplicates - add increment suffix if there is an existing file with proposed filename
+            # TODO: bug!!! how will it know if there will be a duplicate if it's a dry run???
+            duplicate_index = 0 
+            duplicate_exist = os.path.isfile(proposed_filename)
+            while duplicate_exist:
+                files_to_skip.add(proposed_filename)
+                duplicate_index += 1
+                proposed_filename = f"{modified_datetime_formatted} ({duplicate_index}){file_extension}"  # e.g '2020-01-29 (1).png'
+                proposed_filepath = os.path.join(directory_path, proposed_filename)
+                duplicate_exist = os.path.isfile(proposed_filepath)
+
+            # record mapping between old filepath and proposed filepath
+            rename_mapping = (filepath, proposed_filepath)
+            files_to_rename.append(rename_mapping)
+
+        # return files_to_rename
+
+    for mapping in files_to_rename:
+        old_filepath, new_filepath = mapping
+
+        if dry_run:
+            print(f"(Dry run) | {os.path.basename(old_filepath):20} ------> {os.path.basename(new_filepath):20}")
+            pass
+        else:
+            pass
+            # os.rename() # i guess?
+
+
+
+    # by the time we start renaming things, we should already have a mapping of old --> new
+
+    pass
+
 
 
 def rename_windows():
@@ -288,6 +383,8 @@ class StandardVariables:
         "Nov": "11",
         "Dec": "12",
     }
+    windows_datetime_formatting = "%Y-%m-%d" # e.g 2020-01-29
+    steam_datetime_formatting = "%Y%m%d%H%M%S" # e.g 20200129203829
 
 
 class ExitMethods:
@@ -309,9 +406,5 @@ class ExitMethods:
 
 
 if __name__ == "__main__":
-
-    # set cwd to location of the script
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(script_directory) 
 
     main()
