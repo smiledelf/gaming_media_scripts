@@ -73,12 +73,9 @@ def apply_windows_naming(directory_path:str, dry_run:bool=True):
     month_dict = StandardVariables.months
 
     # for each file in current folder, if applicable, propose a new filename (based on scheme) --> create a mapping dict. out of this?
-    files_to_rename = [] # to fill with mapping tuples i.e, (old_filepath, new_filepath)
-    files_to_skip = [] # this is for pictures that already have the name correct naming scheme TODO: this is implicit in the new logic, no?
+    files_to_rename = {} # old_filepath: new_filepath
 
     for file in os.listdir(directory_path):
-
-        rename_mapping = () # to return: (path to old file, path to new file)
 
         # get file extension
         try:
@@ -97,32 +94,27 @@ def apply_windows_naming(directory_path:str, dry_run:bool=True):
                     
             # TODO: branch off here depending on naming scheme - for now, Windows :)
             # propose new filename and add duplicate suffix if appropriate
-            
             proposed_filename = f"{modified_datetime_formatted}{file_extension}"
             proposed_filepath = os.path.join(directory_path, proposed_filename)
 
-            # handle duplicates - add increment suffix if there is an existing file with proposed filename
-            # TODO: bug!!! how will it know if there will be a duplicate if it's a dry run???
-            duplicate_index = 0 
-            duplicate_exist = os.path.isfile(proposed_filename)
-            while duplicate_exist:
-                files_to_skip.add(proposed_filename)
+            # handle edge case of renaming multiple old files to the same proposed filename
+            # - extra logic: if in files_to_skip, it will exist so we need to take that into account too
+            duplicate_index = 0
+            duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
+            while duplicate_exists:
                 duplicate_index += 1
                 proposed_filename = f"{modified_datetime_formatted} ({duplicate_index}){file_extension}"  # e.g '2020-01-29 (1).png'
                 proposed_filepath = os.path.join(directory_path, proposed_filename)
-                duplicate_exist = os.path.isfile(proposed_filepath)
+                duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
 
             # record mapping between old filepath and proposed filepath
-            rename_mapping = (filepath, proposed_filepath)
-            files_to_rename.append(rename_mapping)
+            files_to_rename[filepath] = proposed_filepath
 
         # return files_to_rename
 
-    for mapping in files_to_rename:
-        old_filepath, new_filepath = mapping
-
+    for filepath, proposed_filepath in files_to_rename.items():
         if dry_run:
-            print(f"(Dry run) | {os.path.basename(old_filepath):20} ------> {os.path.basename(new_filepath):20}")
+            print(f"(Dry run) | {os.path.basename(filepath):20} ------> {os.path.basename(proposed_filepath):20}")
             pass
         else:
             pass
