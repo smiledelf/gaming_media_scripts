@@ -54,27 +54,18 @@ def main():
     apply_windows_naming(script_directory, True)
 
 
-def apply_windows_naming(directory_path:str, dry_run:bool=True):
+def get_files_to_rename(directory_path:str) -> dict:
     """
-    The goal: pass in a folder path, and rename based on naming scheme - output renamed files as log.
+    For all files in the directory, generate a mapping between old files and new files
+    - Decide whether a file should be renamed or not (e.g rename if .png)
+    - Handles edge case where multiple old files was going to map to the same new file
 
-    Important edge cases:
-    - Sometimes not all files need to be renamed (e.g if we already ran the script once before)
-
-    Standards:
-    - File paths - should all be in absolute full paths, especially if returning
-
+    :param directory_path: the absolute path to the directory containing files to rename
+    :return: a mapping dictionary, where {old filepath: new filepath}
     """
-
-    # tbh this function should just be 'loop over files, if it matches the dict, then rename it'
-    # this function currently handles most of the logic already
-
-
-    month_dict = StandardVariables.months
 
     # for each file in current folder, if applicable, propose a new filename (based on scheme) --> create a mapping dict. out of this?
     files_to_rename = {} # old_filepath: new_filepath
-
     for file in os.listdir(directory_path):
 
         # get file extension
@@ -110,22 +101,34 @@ def apply_windows_naming(directory_path:str, dry_run:bool=True):
             # record mapping between old filepath and proposed filepath
             files_to_rename[filepath] = proposed_filepath
 
-        # return files_to_rename
+    return files_to_rename
 
+
+def apply_windows_naming(directory_path:str, dry_run:bool=True):
+    """
+    The goal: pass in a folder path, and rename based on naming scheme - output renamed files as log.
+
+    Important edge cases:
+    - Sometimes not all files need to be renamed (e.g if we already ran the script once before)
+
+    Standards:
+    - File paths - should all be in absolute full paths, especially if returning
+
+    """
+
+    # tbh this function should just be 'loop over files, if it matches the dict, then rename it'
+    # this function currently handles most of the logic already
+
+    files_to_rename = get_files_to_rename(directory_path) # TODO: different naming schemes?
     for filepath, proposed_filepath in files_to_rename.items():
+
         if dry_run:
             print(f"(Dry run) | {os.path.basename(filepath):20} ------> {os.path.basename(proposed_filepath):20}")
-            pass
         else:
-            pass
-            # os.rename() # i guess?
-
-
-
-    # by the time we start renaming things, we should already have a mapping of old --> new
-
-    pass
-
+            try:
+                os.rename(filepath, proposed_filepath)
+            except FileExistsError:
+                print("ERROR: Cannot rename", filepath, "to", proposed_filepath + "! File already exists.")
 
 
 def rename_windows():
