@@ -57,8 +57,8 @@ def rename_windows():
           "\n----------------------------------")
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVariables.accepted_extensions
-    month_dict = CommonVariables.months
+    accepted_extensions = StandardVariables.accepted_extensions
+    month_dict = StandardVariables.months
 
     # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
     already_correct = find_existing_windows()
@@ -114,8 +114,8 @@ def find_existing_windows():
     already_correct = set()
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVariables.acc_ext()
-    month_dict = CommonVariables.month_dict()
+    accepted_extensions = StandardVariables.accepted_extensions
+    month_dict = StandardVariables.months
 
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
@@ -170,8 +170,8 @@ def rename_steam():
         app_id = str(input("AppID must be an integer! Please enter the AppID: "))
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVariables.acc_ext()
-    month_dict = CommonVariables.month_dict()
+    accepted_extensions = StandardVariables.accepted_extensions
+    month_dict = StandardVariables.months
 
     # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
     already_correct = find_existing_steam(app_id)
@@ -229,8 +229,8 @@ def find_existing_steam(app_id):
     already_correct = set()
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVariables.accepted_extensions
-    month_dict = CommonVariables.months
+    accepted_extensions = StandardVariables.accepted_extensions
+    month_dict = StandardVariables.months
 
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
@@ -269,8 +269,8 @@ def find_existing_steam(app_id):
     return already_correct  # RETURN SET
 
 
-class CommonVariables:
-    """ Class that defines frequently-used variables, such as a list of accepted extensions
+class StandardVariables:
+    """ Class that defines the standards for frequently-used variables, such as a list of accepted extensions
     """
 
     accepted_extensions = [".jpg", ".png", ".bmp"]
@@ -309,4 +309,9 @@ class ExitMethods:
 
 
 if __name__ == "__main__":
+
+    # set cwd to location of the script
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_directory) 
+
     main()
