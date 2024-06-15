@@ -57,8 +57,8 @@ def rename_windows():
           "\n----------------------------------")
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVar.acc_ext()
-    month_dict = CommonVar.month_dict()
+    accepted_extensions = CommonVariables.accepted_extensions
+    month_dict = CommonVariables.months
 
     # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
     already_correct = find_existing_windows()
@@ -114,8 +114,8 @@ def find_existing_windows():
     already_correct = set()
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVar.acc_ext()
-    month_dict = CommonVar.month_dict()
+    accepted_extensions = CommonVariables.acc_ext()
+    month_dict = CommonVariables.month_dict()
 
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
@@ -170,8 +170,8 @@ def rename_steam():
         app_id = str(input("AppID must be an integer! Please enter the AppID: "))
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVar.acc_ext()
-    month_dict = CommonVar.month_dict()
+    accepted_extensions = CommonVariables.acc_ext()
+    month_dict = CommonVariables.month_dict()
 
     # (ARGH IT'S SO BAD) Loop through current directory and find files with already-correct naming scheme
     already_correct = find_existing_steam(app_id)
@@ -229,8 +229,8 @@ def find_existing_steam(app_id):
     already_correct = set()
 
     # Setting up: extensions and dictionary for month conversion (e.g Jun -> 06)
-    accepted_extensions = CommonVar.acc_ext()
-    month_dict = CommonVar.month_dict()
+    accepted_extensions = CommonVariables.accepted_extensions
+    month_dict = CommonVariables.months
 
     # Get current directory, then loop through its files to find which ones are screenshots
     current_directory = os.curdir
@@ -269,31 +269,25 @@ def find_existing_steam(app_id):
     return already_correct  # RETURN SET
 
 
-class CommonVar:
+class CommonVariables:
+    """ Class that defines frequently-used variables, such as a list of accepted extensions
     """
-    Class that returns frequently-used variables, such as a list of accepted extensions
-    """
-    @staticmethod
-    # accepted extensions
-    def acc_ext():
-        return [".jpg", ".png", ".bmp"]
 
-    @staticmethod
-    def month_dict():
-        return {
-            "Jan": "01",
-            "Feb": "02",
-            "Mar": "03",
-            "Apr": "04",
-            "May": "05",
-            "Jun": "06",
-            "Jul": "07",
-            "Aug": "08",
-            "Sep": "09",
-            "Oct": "10",
-            "Nov": "11",
-            "Dec": "12",
-        }
+    accepted_extensions = [".jpg", ".png", ".bmp"]
+    months = {
+        "Jan": "01",
+        "Feb": "02",
+        "Mar": "03",
+        "Apr": "04",
+        "May": "05",
+        "Jun": "06",
+        "Jul": "07",
+        "Aug": "08",
+        "Sep": "09",
+        "Oct": "10",
+        "Nov": "11",
+        "Dec": "12",
+    }
 
 
 class ExitMethods:
