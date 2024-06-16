@@ -7,6 +7,9 @@ import datetime
 def main():
     """
     Main function to allow the user to pick which naming scheme they want
+    TODO: Bring everything up to standards
+    - Rename script name to screenshots_renamer.py
+    - Implement steam side of improvements
     """
     
     # we dedicate this block for debugging :)
