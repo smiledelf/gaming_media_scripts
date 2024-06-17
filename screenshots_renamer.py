@@ -62,13 +62,15 @@ def main():
         ExitMethods.invalid()
 
 
-def get_files_to_rename(directory_path:str) -> dict:
+def get_files_to_rename(directory_path:str, naming_scheme:str, steam_app_id:str=None) -> dict:
     """
     For all files in the directory, generate a mapping between old files and new files
     - Decide whether a file should be renamed or not (e.g rename if .png)
     - Handles edge case where multiple old files was going to map to the same new file
 
     :param directory_path: the absolute path to the directory containing files to rename
+    :param naming_scheme: one of ['Windows', 'Steam'] - case insensitive
+    :param steam_app_id: if 'Steam' is chosen, then it uses the app id as prefix for the new name, defaults to None
     :return: a mapping dictionary, where {old filepath: new filepath}
     """
 
@@ -89,25 +91,49 @@ def get_files_to_rename(directory_path:str) -> dict:
             modified_timestamp = os.stat(filepath)[stat.ST_MTIME]
             modified_datetime = datetime.datetime.fromtimestamp(modified_timestamp)
 
-            modified_datetime_formatted = modified_datetime.strftime(StandardVariables.windows_datetime_formatting)  # e.g '2020-01-29'
-                    
-            # TODO: branch off here depending on naming scheme - for now, Windows :)
-            # propose new filename and add duplicate suffix if appropriate
-            proposed_filename = f"{modified_datetime_formatted}{file_extension}"
-            proposed_filepath = os.path.join(directory_path, proposed_filename)
+            if naming_scheme.lower() == "windows":
 
-            # handle edge case of renaming multiple old files to the same proposed filename
-            # - extra logic: if in files_to_skip, it will exist so we need to take that into account too
-            duplicate_index = 0
-            duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
-            while duplicate_exists:
-                duplicate_index += 1
-                proposed_filename = f"{modified_datetime_formatted} ({duplicate_index}){file_extension}"  # e.g '2020-01-29 (1).png'
+                modified_datetime_formatted = modified_datetime.strftime(StandardVariables.windows_datetime_formatting)  # e.g '2020-01-29'
+                        
+                # propose new filename and add duplicate suffix if appropriate
+                proposed_filename = f"{modified_datetime_formatted}{file_extension}"
                 proposed_filepath = os.path.join(directory_path, proposed_filename)
-                duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
 
-            # record mapping between old filepath and proposed filepath
-            files_to_rename[filepath] = proposed_filepath
+                # handle edge case of renaming multiple old files to the same proposed filename
+                # - extra logic: if in files_to_skip, it will exist so we need to take that into account too
+                # - windows duplicate example: file.png -> file (1).png -> file (2).png -> ...
+                duplicate_index = 0
+                duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
+                while duplicate_exists:
+                    duplicate_index += 1
+                    proposed_filename = f"{modified_datetime_formatted} ({duplicate_index}){file_extension}"  # e.g '2020-01-29 (1).png'
+                    proposed_filepath = os.path.join(directory_path, proposed_filename)
+                    duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
+
+                # record mapping between old filepath and proposed filepath
+                files_to_rename[filepath] = proposed_filepath
+
+            elif naming_scheme.lower() == "steam":
+
+                modified_datetime_formatted = modified_datetime.strftime(StandardVariables.steam_datetime_formatting)  # e.g '20200129203829'
+
+                # propose new filename and add duplicate suffix if appropriate
+                proposed_filename = f"{steam_app_id}_{modified_datetime_formatted}{file_extension}"
+                proposed_filepath = os.path.join(directory_path, proposed_filename)
+
+                # handle edge case of renaming multiple old files to the same proposed filename
+                # - extra logic: if in files_to_skip, it will exist so we need to take that into account too
+                # - steam duplicate example: file_1.png -> file_2.png -> file_3.png -> ...
+                duplicate_index = 1
+                duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
+                while duplicate_exists:
+                    duplicate_index += 1
+                    proposed_filename = f"{steam_app_id}_{modified_datetime_formatted}_{duplicate_index}{file_extension}"  # e.g '1237970_20200129203829_2.png'
+                    proposed_filepath = os.path.join(directory_path, proposed_filename)
+                    duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
+
+                # record mapping between old filepath and proposed filepath
+                files_to_rename[filepath] = proposed_filepath
 
     return files_to_rename
 
