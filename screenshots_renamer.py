@@ -8,8 +8,8 @@ def main():
     """
     Main function to allow the user to pick which naming scheme they want
     TODO: Bring everything up to standards
-    - Rename script name to screenshots_renamer.py
-    - Implement steam side of improvements
+    - (done) Rename script name to screenshots_renamer.py
+    - (done) Implement steam side of improvements
     - Implement 'preview' like in screenshots organiser?
     """
     
@@ -23,6 +23,8 @@ def main():
         script_directory = os.path.dirname(os.path.abspath(__file__))
     
     os.chdir(script_directory) 
+
+    dry_run = True
 
     # Warnings
     print("-----------------------!! WARNING !!---------------------------"
@@ -41,20 +43,27 @@ def main():
               "\n   e.g 2020-01-29 (8)"
               "\n2: Steam "
               "\n   e.g 1172470_20200129203829_8")
+        
         scheme = input("Please enter the number of the naming scheme to be used: ").strip()
+
+        # generate mapping between existing files and proposed filenames based on naming scheme
         if scheme == "1":
-            # get mapping
-            mapping = get_files_to_rename(script_directory)
-            # renaming
-            output_csv_filename = 'screenshots_renamer_results.csv'
-            output_csv_filepath = os.path.join(script_directory, output_csv_filename)
-            rename_files(mapping, output_csv_filepath, False)
-            ExitMethods.finished()
+            print("----------------------------------\nRenaming using the Windows scheme!\n----------------------------------")
+            mapping = get_files_to_rename(script_directory,  'Windows')
         elif scheme == "2":
-            rename_steam()
-            ExitMethods.finished()
+            print("----------------------------------\nRenaming using the Steam scheme!\n----------------------------------")
+            app_id = str(input("Please enter the AppID: "))
+            while not app_id.isdigit():
+                app_id = str(input("AppID must be an integer! Please enter the AppID: "))
+            mapping = get_files_to_rename(script_directory,  'Steam', app_id)
         else:
             ExitMethods.invalid()
+
+        # rename files and save results to csv
+        output_csv_filename = 'screenshots_renamer_results.csv'
+        output_csv_filepath = os.path.join(script_directory, output_csv_filename)
+        rename_files(mapping, output_csv_filepath, dry_run)
+        ExitMethods.finished()
 
     elif usr == 'n' or usr == 'no':
         ExitMethods.normal_exit()
