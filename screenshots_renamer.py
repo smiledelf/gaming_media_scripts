@@ -14,7 +14,7 @@ def main():
     """
     
     # we dedicate this block for debugging :)
-    debug = True
+    debug = False
     if debug:
         test_folder = "test_screenshots_duplicates" # <--- change here
         script_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), test_folder)
