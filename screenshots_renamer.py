@@ -24,8 +24,6 @@ def main():
     
     os.chdir(script_directory) 
 
-    dry_run = False
-
     # Warnings
     print("-----------------------!! WARNING !!---------------------------"
           "\nThis script will rename image files in the current folder!"
@@ -59,12 +57,20 @@ def main():
         else:
             ExitMethods.invalid()
 
-        # rename files and save results to csv
+        # show preview, then rename files and save results to csv
         output_csv_filename = 'screenshots_renamer_results.csv'
         output_csv_filepath = os.path.join(script_directory, output_csv_filename)
-        rename_files(mapping, output_csv_filepath, dry_run)
-        ExitMethods.finished()
 
+        print("---------------------------------- Renaming preview starts here ----------------------------------")
+        rename_files(mapping, output_csv_filepath, save_results=False, dry_run=True)
+        print("---------------------------------- Preview ends here ----------------------------------")
+        usr = str(input("Does the preview look correct? Type y/n (y will rename the files): ")).lower()
+        if usr == 'y' or usr == 'yes':
+            rename_files(mapping, output_csv_filepath, save_results=True, dry_run=False)
+            ExitMethods.finished()
+        elif usr == 'n' or usr == 'no':
+            print("No files were renamed during this run!")
+            ExitMethods.normal_exit()
     elif usr == 'n' or usr == 'no':
         ExitMethods.normal_exit()
     else:
@@ -147,13 +153,14 @@ def get_files_to_rename(directory_path:str, naming_scheme:str, steam_app_id:str=
     return files_to_rename
 
 
-def rename_files(file_rename_mapping:dict, results_csv_path:str, dry_run:bool=True):
+def rename_files(file_rename_mapping:dict, results_csv_path:str, save_results:bool=True, dry_run:bool=True):
     """
     Rename files according to a mapping dictionary where {old filepath: new filepath}.
     Has a dry run functionality that prints instead of renames.
 
     :param file_rename_mapping: a mapping dictionary, where {old filepath: new filepath} - i.e the output of get_files_to_rename()
     :param results_directory_path: path to where the output results (.csv) will be saved - this will overwrite the file if already exists
+    :param save_results: whether to save the results or not, defaults to True
     :param dry_run: print the files to rename if True; rename the files if False, defaults to True
     """
     
@@ -175,9 +182,10 @@ def rename_files(file_rename_mapping:dict, results_csv_path:str, dry_run:bool=Tr
         rename_results.append(f"{filepath}, {proposed_filepath}, {status}\n")
 
     # save results to csv
-    with open(results_csv_path, 'w') as csv:
-        csv.writelines(rename_results)
-        print(f"Saved log to {results_csv_path}")
+    if save_results:
+        with open(results_csv_path, 'w') as csv:
+            csv.writelines(rename_results)
+            print(f"Saved log to {results_csv_path}")
 
 
 class StandardVariables:
