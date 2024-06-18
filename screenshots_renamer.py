@@ -16,7 +16,7 @@ def main():
     # we dedicate this block for debugging :)
     debug = True
     if debug:
-        test_folder = "test_screenshots" # <--- change here
+        test_folder = "test_screenshots_duplicates" # <--- change here
         script_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), test_folder)
     else:
         # set cwd to location of the script
@@ -24,7 +24,7 @@ def main():
     
     os.chdir(script_directory) 
 
-    dry_run = True
+    dry_run = False
 
     # Warnings
     print("-----------------------!! WARNING !!---------------------------"
@@ -127,13 +127,13 @@ def get_files_to_rename(directory_path:str, naming_scheme:str, steam_app_id:str=
                 modified_datetime_formatted = modified_datetime.strftime(StandardVariables.steam_datetime_formatting)  # e.g '20200129203829'
 
                 # propose new filename and add duplicate suffix if appropriate
-                proposed_filename = f"{steam_app_id}_{modified_datetime_formatted}{file_extension}"
+                duplicate_index = 1
+                proposed_filename = f"{steam_app_id}_{modified_datetime_formatted}_{duplicate_index}{file_extension}"
                 proposed_filepath = os.path.join(directory_path, proposed_filename)
 
                 # handle edge case of renaming multiple old files to the same proposed filename
                 # - extra logic: if in files_to_skip, it will exist so we need to take that into account too
                 # - steam duplicate example: file_1.png -> file_2.png -> file_3.png -> ...
-                duplicate_index = 1
                 duplicate_exists = os.path.isfile(proposed_filepath) or proposed_filepath in files_to_rename.values()
                 while duplicate_exists:
                     duplicate_index += 1
