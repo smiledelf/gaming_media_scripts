@@ -57,6 +57,12 @@ def main():
         else:
             ExitMethods.invalid()
 
+        # exit early if empty mapping
+        if not mapping:
+            print("No files found to rename.")
+            ExitMethods.normal_exit()
+
+
         # show preview, then rename files and save results to csv
         output_csv_filename = 'screenshots_renamer_results.csv'
         output_csv_filepath = os.path.join(script_directory, output_csv_filename)
