@@ -3,6 +3,11 @@ TODO:
 - Write a better version of this.
 
 
+# Screenshots sorter
+A script to sort Steam screenshots into different folders based on their AppId.
+
+
+# Screenshots renamer
 What's this for?
 
 As far as I can tell, I wrote this to rename image files as to conform them to a common naming scheme.
@@ -18,4 +23,4 @@ Example use case - i.e the problem I was solving:
   - Windows: YYYY-MM-DD (N)
   - Steam: AppID_YYYYMMDDHHMMSS_N
 
-  ...where N is any duplicates
+  ...where N is any duplicates  
