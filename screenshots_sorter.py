@@ -26,7 +26,7 @@ class ScreenshotSorter():
             directory = self.root_dir  # this lets us call sort_screenshots() without specifying path if it has been instantiated
 
         for file in os.listdir(directory):
-            if file.endswith(accepted_extensions):
+            if file.endswith(ScreenshotSorter.accepted_extensions):
                 logging.info(f"Detected screenshot {file}")
 
                 # get the game of the screenshot
