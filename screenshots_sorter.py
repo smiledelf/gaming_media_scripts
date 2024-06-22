@@ -76,6 +76,9 @@ class ScreenshotSorter():
 
 if __name__ == "__main__":
 
+    log_path = "screenshots_sorter.log"
+    logger.add(sink=log_path)
+    
     logger.info("Main function starting.")
     script_path = os.path.dirname(os.path.realpath(__file__))
     os.chdir(script_path)
