@@ -1,8 +1,6 @@
 import os
 import steamfront
 from loguru import logger
-from sys import stdout
-
 
 
 class ScreenshotSorter():
@@ -24,6 +22,10 @@ class ScreenshotSorter():
     
 
     def sort_screenshots(self, directory:str=None) -> None:
+        """For a given folder, move loose screenshots into their respective game folders.
+
+        :param directory: directory to sort, defaults to None
+        """
 
         logger.info("Beginning screenshots sorting")
 
@@ -46,14 +48,12 @@ class ScreenshotSorter():
                     self.cache[screenshot_appid] = game_name
                     logger.debug(f"New game detected, API called to get the name of the game ({game_name})")
 
-                
                 # validate game name for Windows folder name (Windows)
                 invalid_mapping = [(_, " -") for _ in ['<','>',':','"','/','\\','|','?','*',]]
                 folder_name = game_name
                 for v, k in invalid_mapping:
                     folder_name = folder_name.replace(v, k)
                 logger.debug(f"Finished validating game name for Windows folder names")
-
 
                 # create game folder if it doesn't exist
                 if not os.path.isdir(folder_name):
@@ -73,6 +73,7 @@ class ScreenshotSorter():
                     logger.error(f"Failed to moved file from {file} to {file_moved}. Exception: {e}")
 
         logger.info("Finished screenshots sorting")
+
 
 if __name__ == "__main__":
 
