@@ -6,7 +6,7 @@ from loguru import logger
 class ScreenshotOrganiser():
 
     client = steamfront.Client()
-    accepted_extensions = ('.png', '.jpg', '.jpg')
+    accepted_extensions = ('.png', '.jpg')
 
 
     def __init__(self, root_dir:str) -> None:

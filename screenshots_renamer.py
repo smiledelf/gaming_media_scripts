@@ -5,13 +5,6 @@ import datetime
 
 
 def main():
-    """
-    Main function to allow the user to pick which naming scheme they want
-    TODO: Bring everything up to standards
-    - (done) Rename script name to screenshots_renamer.py
-    - (done) Implement steam side of improvements
-    - Implement 'preview' like in screenshots organiser?
-    """
     
     # we dedicate this block for debugging :)
     debug = False
@@ -84,6 +77,7 @@ def main():
 
 
 def get_files_to_rename(directory_path:str, naming_scheme:str, steam_app_id:str=None) -> dict:
+    
     """
     For all files in the directory, generate a mapping between old files and new files
     - Decide whether a file should be renamed or not (e.g rename if .png)
