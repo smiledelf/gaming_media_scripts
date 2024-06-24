@@ -33,11 +33,13 @@ Example use case - i.e. the problem I was solving:
 
 ### Usage
 To use the script:
-- Drop the script into a folder 
+- Drop the script into a screenshots folder
+- Run the script
+- Choose the output naming scheme, and finish renaming
 
-Naming schemes to choose:
+#### Naming schemes to choose:
 
-  - Windows: YYYY-mm-dd (*N*)
-  - Steam: AppID_YYYYmmddHHMMSS_*N*
+  - Windows: `YYYY-mm-dd (N)`
+  - Steam: `AppID_YYYYmmddHHMMSS_N`
 
 where N is the duplicate handling index (e.g Steam starts with 1)
