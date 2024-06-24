@@ -3,37 +3,37 @@ import steamfront
 from loguru import logger
 
 
-class ScreenshotSorter():
+class ScreenshotOrganiser():
 
     client = steamfront.Client()
     accepted_extensions = ('.png', '.jpg', '.jpg')
 
 
     def __init__(self, root_dir:str) -> None:
-        """Instantiate screenshot sorter based on directory given.
+        """Instantiate screenshot organiser based on directory given.
         
         :param root_dir: directory to scan
         """
         
-        logger.debug("Instantiated ScreenshotSorter")
+        logger.debug(f"Instantiated {self.__class__}")
 
         self.root_dir = root_dir
         self.cache = dict()  # { appid : game object }
     
 
-    def sort_screenshots(self, directory:str=None) -> None:
+    def organise_screenshots(self, directory:str=None) -> None:
         """For a given folder, move loose screenshots into their respective game folders.
 
-        :param directory: directory to sort, defaults to None
+        :param directory: directory to organise, defaults to None
         """
 
-        logger.info("Beginning screenshots sorting")
+        logger.info("Beginning screenshots organising process...")
 
         if directory is None:
-            directory = self.root_dir  # this lets us call sort_screenshots() without specifying path if it has been instantiated
+            directory = self.root_dir  # this lets us call the method without specifying path if it has been instantiated
 
         for file in os.listdir(directory):
-            if file.endswith(ScreenshotSorter.accepted_extensions):
+            if file.endswith(ScreenshotOrganiser.accepted_extensions):
                 logger.debug(f"Detected screenshot {file}")
 
                 # get the game of the screenshot
@@ -72,12 +72,12 @@ class ScreenshotSorter():
                 except Exception as e:
                     logger.error(f"Failed to moved file from {file} to {file_moved}. Exception: {e}")
 
-        logger.info("Finished screenshots sorting")
+        logger.info("Finished screenshots organising")
 
 
 if __name__ == "__main__":
 
-    log_path = "screenshots_sorter.log"
+    log_path = "screenshots_organiser.log"
     logger.add(sink=log_path)
     
     logger.info("Main function starting.")
@@ -88,8 +88,7 @@ if __name__ == "__main__":
     client = steamfront.Client()
     logger.debug("Initialised steamfront to query Steam API")
 
-    sorter = ScreenshotSorter(script_path)
-    sorter.sort_screenshots()
+    organiser = ScreenshotOrganiser(script_path)
+    organiser.organise_screenshots()
     
     logger.info("Main function finished, closing script")
-    logger.add("screenshots_sorter.log")
