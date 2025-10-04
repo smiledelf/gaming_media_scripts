@@ -141,7 +141,7 @@ def opn6(current_directory, extension_string):
                         valid_name = True
                     except Exception as e:
                         print("\nWHOOPSIE: We ran into an error!")
-                        print("Most likely errors:\n- Filename contains invalid characters (\ / : * ? \" < > |\n- File is open in another program (try closing VLC, etc.)\nTry again!\n")
+                        print("Most likely errors:\n- Filename contains invalid characters (\\ / : * ? \" < > |\n- File is open in another program (try closing VLC, etc.)\nTry again!\n")
 
         input("Folder scan complete. Press ENTER to re-scan...")
 
