@@ -1,0 +1,4 @@
+- add requirements.txt for each
+- don't do debug logging by default for terminal
+- do debug logging for log file
+- remove the error because it's not an error
